@@ -11,6 +11,16 @@ from sklearn.preprocessing import MinMaxScaler
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import confusion_matrix
 import matplotlib.pyplot as plt
+import itertools
+from sklearn.svm import SVC
+from sklearn.svm import NuSVC
+from sklearn.ensemble import GradientBoostingClassifier
+from sklearn.ensemble import AdaBoostClassifier
+from sklearn.ensemble import VotingClassifier
+from sklearn.naive_bayes import GaussianNB
+from sklearn.ensemble import ExtraTreesClassifier
+from sklearn.svm import LinearSVC
+from xgboost import XGBClassifier
 
 #-----------------------------------------------------------------------------------------------------------
 # Model Evaluation
@@ -52,9 +62,6 @@ def plot_confusion_matrix(cm,
     http://scikit-learn.org/stable/auto_examples/model_selection/plot_confusion_matrix.html
 
     """
-    import matplotlib.pyplot as plt
-    import numpy as np
-    import itertools
 
     accuracy = np.trace(cm) / float(np.sum(cm))
     misclass = 1 - accuracy
@@ -115,11 +122,11 @@ def apply_data_split_preprocessing(raw_dataset,labels):
 #-----------------------------------------------------------------------------------------------------------
 # Apply Decision_Tree
 
-def apply_decision_tree(X_train_preprocessed, X_test_preprocessed, y_train, y_test):
+def apply_decision_tree(X_train_preprocessed, X_test_preprocessed, y_train, y_test,class_names_list):
 
 	##TO DO : Testing Hyper Parameters and Cross Validation
 	
-	print 'Applying Decision Tree'
+	print 'Applying Decision Tree Classifier'
 
 	# Training the classifier
 	clf = tree.DecisionTreeClassifier()
@@ -133,10 +140,24 @@ def apply_decision_tree(X_train_preprocessed, X_test_preprocessed, y_train, y_te
 
 	print 'The accuracy achieved by the Decision Tree Model is: ', acc
 
+	# Computing Confusion Matrix
+	#cnf_matrix = confusion_matrix(y_test, y_test_pred)
+	#np.set_printoptions(precision=2)
+
+	# Plot non-normalized confusion matrix
+	#plt.figure()
+	#plot_confusion_matrix(cnf_matrix, target_names=class_names_list,title='Confusion matrix, without normalization')
+
+	# Plot normalized confusion matrix
+	#plt.figure()
+	#plot_confusion_matrix(cnf_matrix, target_names=class_names_list, normalize=True, title='Normalized confusion matrix')
+
+	#plt.show()
+
 #----------------------------------------------------------------------------------------------------------
 # Apply Random Forest
 
-def apply_random_forest(X_train_preprocessed, X_test_preprocessed, y_train, y_test):
+def apply_random_forest(X_train_preprocessed, X_test_preprocessed, y_train, y_test,class_names_list):
 
 	##TO DO : Testing Hyper Parameters and Cross Validation
 	
@@ -152,21 +173,152 @@ def apply_random_forest(X_train_preprocessed, X_test_preprocessed, y_train, y_te
 	#Compute Accuracy Score
 	acc = accuracy_score(y_test,y_test_pred,normalize=True)
 
-	print 'The accuracy achieved by the Random ForestClassifier Model is: ', acc
+	print 'The accuracy achieved by the Random Forest Classifier Model is: ', acc
 
 
 #-------------------------------------------------------------------------------------------------------------
-# Apply Multi-Class SVM. Make sure for probabilities we use Platts Scaling
+# Apply Multi-Class Support Vector Classification. Make sure for probabilities we use Platts Scaling
 
-def apply_multi_class_svm(X_train_preprocessed, X_test_preprocessed, y_train, y_test):
+def apply_multi_class_svc(X_train_preprocessed, X_test_preprocessed, y_train, y_test,class_names_list):
 
 	##TO DO : Testing Hyper Parameters and Cross Validation
 	
-	print 'Applying Multi-Class SVM'
+	print 'Applying Multi-Class SVC'
 
-	pass
+	clf = SVC(gamma='auto')
+	clf = clf.fit(X_train_preprocessed,y_train)
+
+	# Testing the Classifier on Test Data
+	y_test_pred = clf.predict(X_test_preprocessed)
+
+	#Compute Accuracy Score
+	acc = accuracy_score(y_test,y_test_pred,normalize=True)
+
+	print 'The accuracy achieved by Support Vector Classifier is: ', acc
 
 #-------------------------------------------------------------------------------------------------------------
+
+# Apply Multi-Class Nu Support Vector Classification. Make sure for probabilities we use Platts Scaling
+
+def apply_multi_class_nusvc(X_train_preprocessed, X_test_preprocessed, y_train, y_test,class_names_list):
+
+	##TO DO : Testing Hyper Parameters and Cross Validation
+	
+	print 'Applying Multi-Class NuSVC'
+
+	clf = NuSVC(gamma='scale')
+	clf = clf.fit(X_train_preprocessed,y_train)
+
+	# Testing the Classifier on Test Data
+	y_test_pred = clf.predict(X_test_preprocessed)
+
+	#Compute Accuracy Score
+	acc = accuracy_score(y_test,y_test_pred,normalize=True)
+
+	print 'The accuracy achieved by Nu Support Vector Classifier is: ', acc
+
+#-------------------------------------------------------------------------------------------------------------
+# Apply Linear SVC
+
+def apply_multi_class_linear_svc(X_train_preprocessed, X_test_preprocessed, y_train, y_test,class_names_list):
+
+	##TO DO : Testing Hyper Parameters and Cross Validation
+	
+	print 'Applying Multi-Class Linear SVC'
+
+	clf = LinearSVC(random_state=0, tol=1e-5)
+	clf = clf.fit(X_train_preprocessed,y_train)
+
+	# Testing the Classifier on Test Data
+	y_test_pred = clf.predict(X_test_preprocessed)
+
+	#Compute Accuracy Score
+	acc = accuracy_score(y_test,y_test_pred,normalize=True)
+
+	print 'The accuracy achieved by Linear Support Vector Classifier is: ', acc
+
+#-------------------------------------------------------------------------------------------------------------
+# Apply Gradient Boosting
+
+def apply_gradient_boosting(X_train_preprocessed, X_test_preprocessed, y_train, y_test,class_names_list):
+
+	##TO DO : Testing Hyper Parameters and Cross Validation
+	
+	print 'Applying Gradient Boosting'
+
+	# Training the classifier
+	classifier = GradientBoostingClassifier(n_estimators=100)
+	classifier = classifier.fit(X_train_preprocessed,y_train)
+	
+	# Testing the classifier on Test Data
+	y_test_pred = classifier.predict(X_test_preprocessed)
+
+	#Compute Accuracy Score
+	acc = accuracy_score(y_test,y_test_pred,normalize=True)
+
+	print 'The accuracy achieved by the Gradient Boosting Classifier Model is: ', acc
+
+#-------------------------------------------------------------------------------------------------------------
+# Apply Adaboost Classifier
+
+def apply_adaboost_classifier(X_train_preprocessed, X_test_preprocessed, y_train, y_test,class_names_list):
+
+	##TO DO : Testing Hyper Parameters and Cross Validation
+	
+	print 'Applying AdaBoost Classifier'
+
+	# Training the classifier
+	classifier = AdaBoostClassifier(n_estimators=100)
+	classifier = classifier.fit(X_train_preprocessed,y_train)
+	
+	# Testing the classifier on Test Data
+	y_test_pred = classifier.predict(X_test_preprocessed) 
+
+	#Compute Accuracy Score
+	acc = accuracy_score(y_test,y_test_pred,normalize=True)
+
+	print 'The accuracy achieved by the Adaboost Classifier Model is: ', acc
+
+#-----------------------------------------------------------------------------------------------------------------
+# Apply Extra Trees
+
+def apply_extratree_classifier(X_train_preprocessed, X_test_preprocessed, y_train, y_test,class_names_list):
+
+	##TO DO : Testing Hyper Parameters and Cross Validation
+	
+	print 'Applying Extra Tree Classifier'
+
+	# Training the classifier
+	classifier = ExtraTreesClassifier(n_estimators=100)
+	classifier = classifier.fit(X_train_preprocessed,y_train)
+	
+	# Testing the classifier on Test Data
+	y_test_pred = classifier.predict(X_test_preprocessed)
+
+	#Compute Accuracy Score
+	acc = accuracy_score(y_test,y_test_pred,normalize=True)
+
+	print 'The accuracy achieved by the Extra Tree Classifier Model is: ', acc
+
+#------------------------------------------------------------------------------------------------------------------
+# Apply Gradient Boosting from XgBoost
+
+def apply_xgboost_gradient_boosting(X_train_preprocessed, X_test_preprocessed, y_train, y_test,class_names_list):
+
+	print 'Applying XGBoost Gradient Boosting'
+
+	model = XGBClassifier()
+	model.fit(X_train_preprocessed, y_train)
+
+	y_test_pred_values = model.predict(X_test_preprocessed)
+	y_test_pred = [round(value) for value in y_test_pred_values]
+
+	# Compute Accuracy Score
+	acc = accuracy_score(y_test,y_test_pred,normalize=True)
+
+	print 'The accuracy achieved by the Gradient Boosting Model from XgBoost is: ', acc
+
+#-------------------------------------------------------------------------------------------------------------------
 
 def main():
 
@@ -194,10 +346,36 @@ def main():
 	X_train_preprocessed, X_test_preprocessed, y_train, y_test = apply_data_split_preprocessing(echonest_full_data_array,parent_genre_id)
 
 	# Apply Decision Tree
-	apply_decision_tree(X_train_preprocessed,X_test_preprocessed,y_train,y_test)
+	#apply_decision_tree(X_train_preprocessed,X_test_preprocessed,y_train,y_test,parent_genre_title)
 
 	# Apply Random Forest
-	apply_random_forest(X_train_preprocessed,X_test_preprocessed,y_train,y_test)
+	#apply_random_forest(X_train_preprocessed,X_test_preprocessed,y_train,y_test,parent_genre_title)
+
+	# Apply MultiClass SVC
+	#apply_multi_class_svc(X_train_preprocessed,X_test_preprocessed,y_train,y_test,parent_genre_title)
+
+	#-----------------------------------------------------------------------------------------------------------------
+
+	#Apply MultiClass NuSVC
+	#apply_multi_class_nusvc(X_train_preprocessed, X_test_preprocessed, y_train, y_test,parent_genre_title)
+
+	#------------------------------------------------------------------------------------------------------------------
+
+	# Apply Gradient Boosting
+	#apply_gradient_boosting(X_train_preprocessed,X_test_preprocessed,y_train,y_test,parent_genre_title)
+
+	# Apply Adaboost Classifier
+	#apply_adaboost_classifier(X_train_preprocessed,X_test_preprocessed,y_train,y_test,parent_genre_title)
+
+	# Apply Extra Trees
+	#apply_extratree_classifier(X_train_preprocessed,X_test_preprocessed,y_train,y_test,parent_genre_title)
+
+	# Apply Linear SVC
+	#apply_multi_class_linear_svc(X_train_preprocessed,X_test_preprocessed,y_train,y_test,parent_genre_title)
+
+	# Apply Gradient Boosting from XgBoost
+	apply_xgboost_gradient_boosting(X_train_preprocessed, X_test_preprocessed, y_train, y_test,parent_genre_title)
+
 
 
 if __name__ == '__main__':
