@@ -114,7 +114,7 @@ def apply_data_split_preprocessing(raw_dataset,labels):
 	min_max_scaler = preprocessing.MinMaxScaler()
 	X_train_minmax = min_max_scaler.fit_transform(X_train)
 
-	X_test_minmax = min_max_scaler.fit_transform(X_test)
+	X_test_minmax = min_max_scaler.transform(X_test)
 
 	return X_train_minmax, X_test_minmax, y_train, y_test
 
@@ -333,6 +333,9 @@ def main():
 	parent_genre_id = np.array(list(echonest_full_dataset['parent_genre_id']),dtype=np.float64)
 	parent_genre_title = list(echonest_full_dataset['parent_genre_title'])
 	track_id_list = list(echonest_full_dataset['track_id'])
+
+	# Save the track ID in CSV
+	echonest_full_dataset['track_id'].to_csv('track_id_clean.csv',index=False)
 
 	echonest_full_dataset = echonest_full_dataset.drop(axis=1,columns=['parent_genre_title','track_id','parent_genre_id'])
 	echonest_full_dataset = echonest_full_dataset.drop(echonest_full_dataset.select_dtypes(['object']), axis=1)
